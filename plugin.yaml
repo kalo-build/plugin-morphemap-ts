@@ -1,0 +1,57 @@
+name: "@kalo-build/plugin-morphemap-ts"
+displayName: "MorpheMap TypeScript Converter"
+description: "Generates TypeScript converter functions and Zod transform pipelines from MorpheMap (.map) definitions. Handles field mapping, enum translation, and casing bridge transformations."
+version: "1.0.0"
+
+inputs:
+  maps:
+    format: "KA:MM1:YAML1"
+    description: "MorpheMap YAML transformation files"
+    suggestedStore:
+      name: "KA_MM_YAML"
+      type: "localFileSystem"
+      path: "./morphe/maps"
+  registry:
+    format: "KA:MO1:YAML1"
+    description: "Local Morphe YAML schema files"
+    suggestedStore:
+      name: "KA_MO_YAML"
+      type: "localFileSystem"
+      path: "./morphe/registry"
+  external:
+    format: "KA:MO1:YAML1"
+    description: "External Morphe YAML schema files (third-party API types)"
+    suggestedStore:
+      name: "KA_MO_EXT"
+      type: "localFileSystem"
+      path: "./morphe/external"
+
+output:
+  format: "KA:MM1:TS1"
+  description: "TypeScript converter function files"
+  suggestedStore:
+    name: "KA_MM_TS"
+    type: "localFileSystem"
+    path: "./src/generated/converters"
+
+configSchema:
+  sourceTypesImportPath:
+    type: string
+    description: "Import path for source TypeScript types"
+    required: true
+  targetTypesImportPath:
+    type: string
+    description: "Import path for target TypeScript types"
+    required: true
+  zodSchemasImportPath:
+    type: string
+    description: "Import path for Zod schemas (for casing bridge transforms)"
+  generateZodTransforms:
+    type: boolean
+    description: "Generate Zod .transform() pipelines for casing maps"
+    default: true
+  fieldCasing:
+    type: string
+    description: "Default field casing for generated TypeScript output"
+    enum: ["camel", "snake", "pascal"]
+    default: "camel"
