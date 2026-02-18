@@ -45,13 +45,4 @@ configSchema:
     required: true
   zodSchemasImportPath:
     type: string
-    description: "Import path for Zod schemas (for casing bridge transforms)"
-  generateZodTransforms:
-    type: boolean
-    description: "Generate Zod .transform() pipelines for casing maps"
-    default: true
-  fieldCasing:
-    type: string
-    description: "Default field casing for generated TypeScript output"
-    enum: ["camel", "snake", "pascal"]
-    default: "camel"
+    description: "Import path for Zod schemas"
