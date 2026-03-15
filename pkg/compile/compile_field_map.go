@@ -7,6 +7,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/kalo-build/go-util/strcase"
 	"github.com/kalo-build/morphe-go/pkg/registry"
 	"github.com/kalo-build/plugin-morphemap-ts/pkg/mapdef"
 )
@@ -223,20 +224,14 @@ func hasAlias(value string, aliases map[string]string) bool {
 }
 
 func toCamelCase(s string) string {
-	// Handle nested paths: Address.Street → address.street
 	if strings.Contains(s, ".") {
 		parts := strings.Split(s, ".")
 		for i, p := range parts {
-			parts[i] = toCamelCase(p)
+			parts[i] = strcase.ToCamelCase(p)
 		}
 		return strings.Join(parts, ".")
 	}
-	if len(s) == 0 {
-		return s
-	}
-	// Simple PascalCase → camelCase
-	first := strings.ToLower(string(s[0]))
-	return first + s[1:]
+	return strcase.ToCamelCase(s)
 }
 
 func toKebabCase(name string) string {

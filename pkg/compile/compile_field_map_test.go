@@ -173,9 +173,38 @@ func (suite *FieldMapTestSuite) TestBuildTsFieldMapData_CamelCaseConversion() {
 	data := compile.BuildTsFieldMapData(m, config)
 
 	suite.Require().Len(data.Fields, 1)
-	// PascalCase fields should be converted to camelCase in TS
 	suite.Equal("firstName", data.Fields[0].TargetField)
 	suite.Equal("firstName", data.Fields[0].SourceExpr)
+}
+
+func (suite *FieldMapTestSuite) TestBuildTsFieldMapData_InitialismCasing() {
+	m := &mapdef.MorpheMap{
+		Name: "InitialismTest",
+		Aliases: map[string]string{
+			"Src": "Source",
+			"Tgt": "Target",
+		},
+		Fields: mapdef.FieldMappings{
+			"Tgt.ID":                mapdef.FieldMappingValue{IsScalar: true, Scalar: "Src.ID"},
+			"Tgt.ExternalPaymentID": mapdef.FieldMappingValue{IsScalar: true, Scalar: "Src.ExternalPaymentID"},
+			"Tgt.URL":               mapdef.FieldMappingValue{IsScalar: true, Scalar: "Src.URL"},
+		},
+	}
+	config := compile.TsConverterConfig{
+		SourceTypesImportPath: "@/types/source",
+		TargetTypesImportPath: "@/types/target",
+	}
+
+	data := compile.BuildTsFieldMapData(m, config)
+
+	fieldMap := make(map[string]compile.TsFieldMappingData)
+	for _, f := range data.Fields {
+		fieldMap[f.TargetField] = f
+	}
+
+	suite.Equal("id", fieldMap["id"].SourceExpr, "standalone ID should become id")
+	suite.Equal("externalPaymentID", fieldMap["externalPaymentID"].SourceExpr, "trailing ID should stay uppercase")
+	suite.Equal("url", fieldMap["url"].SourceExpr, "standalone URL should become url")
 }
 
 func (suite *FieldMapTestSuite) TestRenderTsFieldMapTemplate_ProducesValidTs() {
